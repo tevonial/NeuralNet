@@ -29,15 +29,6 @@ public class Layer {
                 errors[i] = Network.target[i] - output.get(i);
             }
             correct(errors);
-
-            /*for (int i=0; i<Network.target.length; i++) {
-
-                double[] errors = new double[neurons.size()];
-                for (int j=0; j<errors.length; j++) {
-                    errors[j] = Network.target[i] - output.get(i);
-                }
-                correct(errors);
-            }*/
         } else {
             next.feed(output);
         }
