@@ -1,7 +1,5 @@
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.StringJoiner;
 
 /**
  * Created by Connor on 6/26/2016.
@@ -11,7 +9,7 @@ public class Network {
     private static Layer inputLayer;
     public static double LEARNING_RATE = 1;
 
-    private int hiddenSize, inputSize, outputSize, hiddenLayers, iteration;
+    private int hiddenSize, inputSize, outputSize, hiddenLayers;
     public static double[] target;
 
     public Network(int inputSize, int outputSize) {
@@ -26,7 +24,6 @@ public class Network {
     }
 
     public Network build() {
-        iteration = 0;
         layers.clear();
         layers.add(new Layer(0, outputSize, hiddenSize));
         for (int i=0; i<hiddenLayers; i++) {
@@ -55,14 +52,13 @@ public class Network {
         this.target = target;
         inputLayer.feedForward(inputList);
 
-        List<Double> output = layers.get(0).getOutput();
-        double[] doutput = new double[output.size()];
-        for (int i=0; i<output.size(); i++) {
-            doutput[i] = output.get(i);
+        List<Double> o = layers.get(0).getOutput();
+        double[] output = new double[o.size()];
+        for (int i=0; i<o.size(); i++) {
+            output[i] = o.get(i);
         }
 
-        NeuralNet.printResults(doutput, target);
-
+        NeuralNet.printResults(output, target);
 
         try {
             Thread.sleep(50);
