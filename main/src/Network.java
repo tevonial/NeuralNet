@@ -10,7 +10,7 @@ public class Network {
     public static double LEARNING_RATE = 1;
 
     private int hiddenSize, inputSize, outputSize, hiddenLayers;
-    public static double[] target;
+    public static double[] TARGET;
 
     public Network(int inputSize, int outputSize) {
         this.inputSize = inputSize;
@@ -49,7 +49,7 @@ public class Network {
             inputList.add(input[i]);
         }
 
-        this.target = target;
+        TARGET = target;
         inputLayer.feedForward(inputList);
 
         List<Double> o = layers.get(0).getOutput();
@@ -59,12 +59,6 @@ public class Network {
         }
 
         NeuralNet.printResults(output, target);
-
-        try {
-            Thread.sleep(50);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
     }
 
     public static void printWeights() {

@@ -30,7 +30,7 @@ public class Neuron {
 
     public void correct(int layerIndex, List<Double> d, List<Double> w) {
         if (layerIndex == 0) {  //OUTPUT LAYER
-            recursiveDelta = (o - Network.target[index]) * (o) * (1 - o);
+            recursiveDelta = (o - Network.TARGET[index]) * (o) * (1 - o);
         } else {                //HIDDEN LAYER
             recursiveDelta = 0;
             for (int i=0; i< d.size(); i++) {
