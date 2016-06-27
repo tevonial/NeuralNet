@@ -5,9 +5,10 @@ import java.util.List;
  * Created by Connor on 6/26/2016.
  */
 public class Neuron {
-    private List<Double> weights = new ArrayList<>();
-    private List<Double> last = new ArrayList<>();
     private int index;
+    private List<Double> weights = new ArrayList<>();
+    private double o;
+    private double recursiveDelta;
 
     public Neuron(int index, int numInputs) {
         this.index = index;
@@ -17,28 +18,40 @@ public class Neuron {
     }
 
     public double getOutput(List<Double> inputs) {
-        last = inputs;
         double activation = 0;
 
         for (int i=0; i < weights.size(); i++) {
             activation += weights.get(i) * inputs.get(i);
         }
 
-        return (1/( 1 + Math.exp(-1*activation)));
+        o = (1/( 1 + Math.exp(-1*activation)));
+        return o;
     }
 
-    public void correct(double error, int degree) {
-        double[] errors = new double[weights.size()];
+    public void correct(int layerIndex, List<Double> d, List<Double> w) {
+        if (layerIndex == 0) {  //OUTPUT LAYER
+            recursiveDelta = (o - Network.target[index]) * (o) * (1 - o);
+        } else {                //HIDDEN LAYER
+            recursiveDelta = 0;
+            for (int i=0; i< d.size(); i++) {
+                recursiveDelta += (d.get(i) * w.get(i));
+            }
+            recursiveDelta *= (o) * (1 - o);
+        }
+
+        //FINAL DELTA
+        double delta = recursiveDelta * (-1) * Network.LEARNING_RATE;
 
         for (int i=0; i<weights.size(); i++) {
-            errors[i] = error / last.get(i);
-            weights.set(i, weights.get(i) + (errors[i] / (1*Math.exp(degree))));
+            weights.set(i, weights.get(i) + delta);
         }
+    }
 
-        try {
-            Network.getLayer(index + 1).correct(errors);
-        } catch (NullPointerException e) {
+    public List<Double> getWeights() {
+        return weights;
+    }
 
-        }
+    public double getRecursiveDelta() {
+        return recursiveDelta;
     }
 }

@@ -1,5 +1,7 @@
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringJoiner;
 
 /**
  * Created by Connor on 6/26/2016.
@@ -7,6 +9,7 @@ import java.util.List;
 public class Network {
     private static List<Layer> layers = new ArrayList<>();
     private static Layer inputLayer;
+    public static double LEARNING_RATE = 1;
 
     private int hiddenSize, inputSize, outputSize, hiddenLayers, iteration;
     public static double[] target;
@@ -29,7 +32,7 @@ public class Network {
         for (int i=0; i<hiddenLayers; i++) {
             layers.add(new Layer(i+1, hiddenSize, (i+1 ==  hiddenLayers) ? inputSize : hiddenSize));
         }
-        inputLayer = new Layer(layers.size(), inputSize, inputSize);
+        inputLayer = new Layer(layers.size(), inputSize, 1);
         return this;
     }
 
@@ -50,7 +53,7 @@ public class Network {
         }
 
         this.target = target;
-        inputLayer.feed(inputList);
+        inputLayer.feedForward(inputList);
 
         List<Double> output = layers.get(0).getOutput();
         double[] doutput = new double[output.size()];
@@ -65,6 +68,27 @@ public class Network {
             Thread.sleep(50);
         } catch (InterruptedException e) {
             e.printStackTrace();
+        }
+    }
+
+    public static void printWeights() {
+        String f = "%8.4f";
+
+        System.out.print("\n\nLayer 0: ");
+        for (Neuron n : inputLayer.getNeurons()) {
+           for (Double d : n.getWeights()) {
+               System.out.format(f, d);
+           }
+        }
+        System.out.println(); int i = 0;
+        for (Layer l : layers) {
+            System.out.print("Layer " + ++i + ": ");
+            for (Neuron n : l.getNeurons()) {
+                for (Double d : n.getWeights()) {
+                    System.out.format(f, d);
+                }
+            }
+            System.out.println();
         }
     }
 }
