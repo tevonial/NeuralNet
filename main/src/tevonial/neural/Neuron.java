@@ -10,7 +10,8 @@ public class Neuron {
     private Network network;
     private int index;
     private int numInputs;
-    private List<Double> weights = new ArrayList<>();
+    private List<Double> weights;
+    private List<Double> input;
     private double o;
     private double d;
 
@@ -18,6 +19,7 @@ public class Neuron {
         this.network = network;
         this.index = index;
         this.numInputs = numInputs;
+        weights = new ArrayList<>();
         for (int i=0; i<=numInputs; i++) {  //<= for bias
             weights.add(Math.random() - Math.random());
         }
@@ -27,11 +29,14 @@ public class Neuron {
         double activation = 0;
 
         if (numInputs == 1) {                               //For input layer
-            activation += weights.get(0) * inputs.get(index);
+            this.input = new ArrayList<>();
+            this.input.add(inputs.get(index));
         } else {                                            //For all other layers
-            for (int i = 0; i < inputs.size(); i++) {
-                activation += weights.get(i) * inputs.get(i);
-            }
+            this.input = inputs;
+        }
+
+        for (int i = 0; i < input.size(); i++) {
+            activation += weights.get(i) * input.get(i);
         }
 
         activation += weights.get(weights.size()-1);        //bias weight * 1
@@ -52,9 +57,14 @@ public class Neuron {
         }
 
         //FINAL DELTA
-        double deltaWeight = this.d * (-1) * network.LEARNING_RATE;
+        double delta = this.d * (-1) * network.LEARNING_RATE;
 
         for (int i=0; i<weights.size(); i++) {
+            double deltaWeight = delta;
+            try {
+                deltaWeight *= input.get(i);
+            } catch (IndexOutOfBoundsException e) {}
+
             weights.set(i, weights.get(i) + deltaWeight);
         }
     }

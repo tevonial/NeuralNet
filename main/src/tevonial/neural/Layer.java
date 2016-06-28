@@ -7,20 +7,21 @@ import java.util.*;
  */
 public class Layer {
     private Network network;
-    private List<Neuron> neurons = new ArrayList<>();
-    private List<Double> output = new ArrayList<>();
+    private List<Neuron> neurons;
+    private List<Double> output;
     private int layerIndex;
 
     public Layer(Network network, int layerIndex, int size, int numInputs) {
         this.network = network;
         this.layerIndex = layerIndex;
+        neurons = new ArrayList<>();
         for (int i=0; i<size; i++) {
             neurons.add(new Neuron(network, i, numInputs));
         }
     }
 
     public void feedForward(List<Double> input) {
-        output.clear();
+        output = new ArrayList<>();
         for (int i=0; i<neurons.size(); i++) {
             output.add(neurons.get(i).getOutput(input));
         }

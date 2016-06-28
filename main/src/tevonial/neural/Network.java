@@ -78,7 +78,7 @@ public class Network {
     public void printWeights() {
         String f = "%8.4f";
 
-        System.out.print("\n\nLayer 0: ");
+        System.out.print("\n\nLayer " + layers.size() + ": ");
         for (Neuron n : inputLayer.getNeurons()) {
            for (Double d : n.getWeights()) {
                System.out.format(f, d);
