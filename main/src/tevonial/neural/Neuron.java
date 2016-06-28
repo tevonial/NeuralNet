@@ -1,3 +1,5 @@
+package tevonial.neural;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -5,12 +7,14 @@ import java.util.List;
  * Created by Connor on 6/26/2016.
  */
 public class Neuron {
+    private Network network;
     private int index;
     private List<Double> weights = new ArrayList<>();
     private double o;
-    private double recursiveDelta;
+    private double d;
 
-    public Neuron(int index, int numInputs) {
+    public Neuron(Network network, int index, int numInputs) {
+        this.network = network;
         this.index = index;
         for (int i=0; i<numInputs; i++) {
             weights.add(Math.random() - Math.random());
@@ -30,20 +34,20 @@ public class Neuron {
 
     public void correct(int layerIndex, List<Double> d, List<Double> w) {
         if (layerIndex == 0) {  //OUTPUT LAYER
-            recursiveDelta = (o - Network.TARGET[index]) * (o) * (1 - o);
+            this.d = (o - network.getTarget(index)) * (o) * (1 - o);
         } else {                //HIDDEN LAYER
-            recursiveDelta = 0;
+            this.d = 0;
             for (int i=0; i< d.size(); i++) {
-                recursiveDelta += (d.get(i) * w.get(i));
+                this.d += (d.get(i) * w.get(i));
             }
-            recursiveDelta *= (o) * (1 - o);
+            this.d *= (o) * (1 - o);
         }
 
         //FINAL DELTA
-        double delta = recursiveDelta * (-1) * Network.LEARNING_RATE;
+        double deltaWeight = this.d * (-1) * network.LEARNING_RATE;
 
         for (int i=0; i<weights.size(); i++) {
-            weights.set(i, weights.get(i) + delta);
+            weights.set(i, weights.get(i) + deltaWeight);
         }
     }
 
@@ -51,7 +55,7 @@ public class Neuron {
         return weights;
     }
 
-    public double getRecursiveDelta() {
-        return recursiveDelta;
+    public double getD() {
+        return d;
     }
 }

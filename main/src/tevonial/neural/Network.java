@@ -1,3 +1,5 @@
+package tevonial.neural;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -5,12 +7,12 @@ import java.util.List;
  * Created by Connor on 6/26/2016.
  */
 public class Network {
-    private static List<Layer> layers = new ArrayList<>();
-    private static Layer inputLayer;
-    public static double LEARNING_RATE = 1;
-
+    private List<Layer> layers;
+    private Layer inputLayer;
     private int hiddenSize, inputSize, outputSize, hiddenLayers;
-    public static double[] TARGET;
+    private double[] target;
+
+    public double LEARNING_RATE = 1;
 
     public Network(int inputSize, int outputSize) {
         this.inputSize = inputSize;
@@ -24,16 +26,16 @@ public class Network {
     }
 
     public Network build() {
-        layers.clear();
-        layers.add(new Layer(0, outputSize, hiddenSize));
+        layers = new ArrayList<>();
+        layers.add(new Layer(this, 0, outputSize, hiddenSize));
         for (int i=0; i<hiddenLayers; i++) {
-            layers.add(new Layer(i+1, hiddenSize, (i+1 ==  hiddenLayers) ? inputSize : hiddenSize));
+            layers.add(new Layer(this, i+1, hiddenSize, (i+1 ==  hiddenLayers) ? inputSize : hiddenSize));
         }
-        inputLayer = new Layer(layers.size(), inputSize, 1);
+        inputLayer = new Layer(this, layers.size(), inputSize, 1);
         return this;
     }
 
-    public static Layer getLayer(int index) {
+    public Layer getLayer(int index) {
         if (index == layers.size()) {
             return inputLayer;
         } else if (index == -1 || index >= layers.size()) {
@@ -43,13 +45,17 @@ public class Network {
         }
     }
 
+    public double getTarget(int index) {
+        return target[index];
+    }
+
     public void process(double[] input, double[] target) {
         List<Double> inputList = new ArrayList<>();
         for (int i=0; i<input.length; i++) {
             inputList.add(input[i]);
         }
 
-        TARGET = target;
+        this.target = target;
         inputLayer.feedForward(inputList);
 
         List<Double> o = layers.get(0).getOutput();
@@ -58,13 +64,21 @@ public class Network {
             output[i] = o.get(i);
         }
 
-        NeuralNet.printResults(output, target);
+        printResults(output);
     }
 
-    public static void printWeights() {
+    private static void printResults(double[] output) {
+        String f = "%4.10f  ";
+        for (double out : output) {
+            System.out.format(f, out);
+        }
+        System.out.println();
+    }
+
+    public void printWeights() {
         String f = "%8.4f";
 
-        System.out.print("\n\nLayer 0: ");
+        System.out.print("\n\ntevonial.neural.Layer 0: ");
         for (Neuron n : inputLayer.getNeurons()) {
            for (Double d : n.getWeights()) {
                System.out.format(f, d);
@@ -72,7 +86,7 @@ public class Network {
         }
         System.out.println(); int i = 0;
         for (Layer l : layers) {
-            System.out.print("Layer " + ++i + ": ");
+            System.out.print("tevonial.neural.Layer " + ++i + ": ");
             for (Neuron n : l.getNeurons()) {
                 for (Double d : n.getWeights()) {
                     System.out.format(f, d);
@@ -81,4 +95,6 @@ public class Network {
             System.out.println();
         }
     }
+
+
 }

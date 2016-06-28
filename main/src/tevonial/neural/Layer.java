@@ -1,17 +1,21 @@
+package tevonial.neural;
+
 import java.util.*;
 
 /**
  * Created by Connor on 6/26/2016.
  */
 public class Layer {
+    private Network network;
     private List<Neuron> neurons = new ArrayList<>();
     private List<Double> output = new ArrayList<>();
     private int layerIndex;
 
-    public Layer(int layerIndex, int size, int numInputs) {
+    public Layer(Network network, int layerIndex, int size, int numInputs) {
+        this.network = network;
         this.layerIndex = layerIndex;
         for (int i=0; i<size; i++) {
-            neurons.add(new Neuron(i, numInputs));
+            neurons.add(new Neuron(network, i, numInputs));
         }
     }
 
@@ -21,7 +25,7 @@ public class Layer {
             output.add(neurons.get(i).getOutput(input));
         }
 
-        Layer next = Network.getLayer(layerIndex - 1);
+        Layer next = network.getLayer(layerIndex - 1);
         if (next == null) {
             this.backPropagate(null, null);
         } else {
@@ -29,7 +33,7 @@ public class Layer {
         }
     }
 
-    public void backPropagate(List<Double> d, List<List<Double>> w) {
+    private void backPropagate(List<Double> d, List<List<Double>> w) {
         List<List<Double>> _w = new ArrayList<>();
         List<Double> _d = new ArrayList<>();
         for (int j=0; j<neurons.size(); j++) {
@@ -41,14 +45,14 @@ public class Layer {
                 n.correct(layerIndex, null, null);
             }
 
-            _d.add(n.getRecursiveDelta());
+            _d.add(n.getD());
             _w.add(n.getWeights());
         }
 
         _w = rotate(_w);
 
         try {
-            Network.getLayer(layerIndex + 1).backPropagate(_d, _w);
+            network.getLayer(layerIndex + 1).backPropagate(_d, _w);
         } catch (NullPointerException e) {}
     }
 
@@ -60,27 +64,27 @@ public class Layer {
         return neurons;
     }
 
-    private List<List<Double>> rotate(List<List<Double>> input) {
-        List<List<Double>> w = new ArrayList<>(); boolean first = true;
-        List<Double> sample = new ArrayList<>();
-        for (int p=0; p<input.size(); p++) {
-            sample.add(0.0);
+    private List<List<Double>> rotate(List<List<Double>> in) {
+        List<List<Double>> out = new ArrayList<>(); boolean first = true;
+        List<Double> row = new ArrayList<>();
+        for (int i=0; i<in.size(); i++) {
+            row.add(null);
         }
 
-        for (int i=0; i<input.size(); i++) {
-            List<Double> l = input.get(i);
+        for (int x=0; x<in.size(); x++) {
+            List<Double> l = in.get(x);
             if (first) {
-                for (int x = 0; x < l.size(); x++) {
-                    w.add(sample);
+                for (int i=0; i<l.size(); i++) {
+                    out.add(row);
                 }
             }
             first = false;
 
-            for (int x = 0; x < l.size(); x++) {
-                w.get(x).set(i, l.get(x));
+            for (int y=0; y<l.size(); y++) {
+                out.get(y).set(x, l.get(y));
             }
         }
-        return w;
+        return out;
     }
 }
 

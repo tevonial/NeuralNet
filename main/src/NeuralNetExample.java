@@ -1,7 +1,9 @@
+import tevonial.neural.Network;
+
 /**
  * Created by Connor on 6/26/2016.
  */
-public class NeuralNet {
+public class NeuralNetExample {
 
     private static double[][] TARGET = {
             {0.1738, 0.1234, 0.22},
@@ -28,13 +30,6 @@ public class NeuralNet {
                 e.printStackTrace();
             }
         }
-        Network.printWeights();
-    }
-
-    public static void printResults(double[] output, double[] target) {
-        for (double out : output) {
-            System.out.print(out + " ");
-        }
-        System.out.println();
+        net.printWeights();
     }
 }
