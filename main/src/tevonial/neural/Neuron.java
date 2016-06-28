@@ -9,6 +9,7 @@ import java.util.List;
 public class Neuron {
     private Network network;
     private int index;
+    private int numInputs;
     private List<Double> weights = new ArrayList<>();
     private double o;
     private double d;
@@ -16,7 +17,8 @@ public class Neuron {
     public Neuron(Network network, int index, int numInputs) {
         this.network = network;
         this.index = index;
-        for (int i=0; i<numInputs; i++) {
+        this.numInputs = numInputs;
+        for (int i=0; i<=numInputs; i++) {  //<= for bias
             weights.add(Math.random() - Math.random());
         }
     }
@@ -24,9 +26,15 @@ public class Neuron {
     public double getOutput(List<Double> inputs) {
         double activation = 0;
 
-        for (int i=0; i < weights.size(); i++) {
-            activation += weights.get(i) * inputs.get(i);
+        if (numInputs == 1) {                               //For input layer
+            activation += weights.get(0) * inputs.get(index);
+        } else {                                            //For all other layers
+            for (int i = 0; i < inputs.size(); i++) {
+                activation += weights.get(i) * inputs.get(i);
+            }
         }
+
+        activation += weights.get(weights.size()-1);        //bias weight * 1
 
         o = (1/( 1 + Math.exp(-1*activation)));
         return o;

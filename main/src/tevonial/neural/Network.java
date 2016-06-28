@@ -78,15 +78,16 @@ public class Network {
     public void printWeights() {
         String f = "%8.4f";
 
-        System.out.print("\n\ntevonial.neural.Layer 0: ");
+        System.out.print("\n\nLayer 0: ");
         for (Neuron n : inputLayer.getNeurons()) {
            for (Double d : n.getWeights()) {
                System.out.format(f, d);
            }
         }
-        System.out.println(); int i = 0;
-        for (Layer l : layers) {
-            System.out.print("tevonial.neural.Layer " + ++i + ": ");
+        System.out.println();
+        for (int i=layers.size()-1; i>=0; i--) {
+            Layer l = layers.get(i);
+            System.out.print("Layer " + i + ": ");
             for (Neuron n : l.getNeurons()) {
                 for (Double d : n.getWeights()) {
                     System.out.format(f, d);
