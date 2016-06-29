@@ -3,9 +3,6 @@ package tevonial.neural;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by Connor on 6/26/2016.
- */
 public class Neuron {
     private Network network;
     private int index;

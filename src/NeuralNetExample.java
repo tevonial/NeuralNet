@@ -1,8 +1,5 @@
 import tevonial.neural.Network;
 
-/**
- * Created by Connor on 6/26/2016.
- */
 public class NeuralNetExample {
 
     private static double[][] TARGET = {
@@ -26,13 +23,13 @@ public class NeuralNetExample {
                 .setHiddenLayers(1, 15)
                 .build();
 
-        for (int i = 0; i<250000; i++) {
-            //net.process(INPUT[3], TARGET[3]);
-            //net.process(INPUT[4], TARGET[4]);
-            net.process(INPUT[0], TARGET[0]);
-            net.process(INPUT[1], TARGET[1]);
-            net.process(INPUT[2], TARGET[2]);
+        int iterations = 7500;
+        for (int i = 0; i<=iterations; i++) {
+            net.process(INPUT[0], TARGET[0], (i == iterations) ? "1" : null);
+            net.process(INPUT[1], TARGET[1], (i == iterations) ? "2" : null);
+            net.process(INPUT[2], TARGET[2], (i == iterations) ? "3" : null);
         }
+
         net.printWeights();
     }
 }

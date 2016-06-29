@@ -3,16 +3,13 @@ package tevonial.neural;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by Connor on 6/26/2016.
- */
 public class Network {
     private List<Layer> layers;
     private Layer inputLayer;
     private int hiddenSize, inputSize, outputSize, hiddenLayers;
     private double[] target;
 
-    public double LEARNING_RATE = 1;
+    public double LEARNING_RATE = .8;
 
     public Network(int inputSize, int outputSize) {
         this.inputSize = inputSize;
@@ -49,7 +46,7 @@ public class Network {
         return target[index];
     }
 
-    public void process(double[] input, double[] target) {
+    public void process(double[] input, double[] target, String set) {
         List<Double> inputList = new ArrayList<>();
         for (int i=0; i<input.length; i++) {
             inputList.add(input[i]);
@@ -64,11 +61,14 @@ public class Network {
             output[i] = o.get(i);
         }
 
-        printResults(output);
+        if (set != null) {
+            printResults(output, set);
+        }
     }
 
-    private static void printResults(double[] output) {
+    private static void printResults(double[] output, String set) {
         String f = "%4.10f  ";
+        System.out.print(set + " --> ");
         for (double out : output) {
             System.out.format(f, out);
         }

@@ -2,9 +2,6 @@ package tevonial.neural;
 
 import java.util.*;
 
-/**
- * Created by Connor on 6/26/2016.
- */
 public class Layer {
     private Network network;
     private List<Neuron> neurons;
