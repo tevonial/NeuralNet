@@ -5,6 +5,8 @@ import tevonial.neural.Network;
  */
 public class NeuralNetExample {
 
+    //hey
+
     private static double[][] TARGET = {
             {0.2738, 0.2234, 0.32},
             {0.1738, 0.1234, 0.22},
@@ -26,13 +28,14 @@ public class NeuralNetExample {
                 .setHiddenLayers(1, 15)
                 .build();
 
-        for (int i = 0; i<250000; i++) {
-            //net.process(INPUT[3], TARGET[3]);
-            //net.process(INPUT[4], TARGET[4]);
-            net.process(INPUT[0], TARGET[0]);
-            net.process(INPUT[1], TARGET[1]);
-            net.process(INPUT[2], TARGET[2]);
+        int iterations = 7500;
+        for (int i = 0; i<=iterations; i++) {
+            net.process(INPUT[0], TARGET[0], (i == iterations) ? "1" : null);
+            net.process(INPUT[1], TARGET[1], (i == iterations) ? "2" : null);
+            net.process(INPUT[2], TARGET[2], (i == iterations) ? "3" : null);
         }
+
+
         net.printWeights();
     }
 }
