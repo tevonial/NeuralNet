@@ -17,7 +17,7 @@ public class Layer {
         }
     }
 
-    public void feedForward(List<Double> input) {
+    public void feedForward(List<Double> input, boolean backprop) {
         output = new ArrayList<>();
         for (int i=0; i<neurons.size(); i++) {
             output.add(neurons.get(i).getOutput(input));
@@ -25,9 +25,9 @@ public class Layer {
 
         Layer next = network.getLayer(layerIndex - 1);
         if (next == null) {
-            this.backPropagate(null, null);
+            if (backprop) this.backPropagate(null, null);
         } else {
-            next.feedForward(output);
+            next.feedForward(output, backprop);
         }
     }
 

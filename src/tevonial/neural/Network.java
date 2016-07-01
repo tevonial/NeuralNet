@@ -8,8 +8,9 @@ public class Network {
     private Layer inputLayer;
     private int hiddenSize, inputSize, outputSize, hiddenLayers;
     private double[] target;
+    public int set;
 
-    public double LEARNING_RATE = .8;
+    public double LEARNING_RATE = 0.5;
 
     public Network(int inputSize, int outputSize) {
         this.inputSize = inputSize;
@@ -20,6 +21,10 @@ public class Network {
         this.hiddenLayers = layers;
         this.hiddenSize = hiddenSize;
         return this;
+    }
+
+    public void setLearningRate(double l) {
+        LEARNING_RATE = l;
     }
 
     public Network build() {
@@ -46,14 +51,15 @@ public class Network {
         return target[index];
     }
 
-    public void process(double[] input, double[] target, String set) {
+    public double[] process(double[] input, double[] target, boolean backprop, Integer set) {
+        this.set = set;
         List<Double> inputList = new ArrayList<>();
         for (int i=0; i<input.length; i++) {
             inputList.add(input[i]);
         }
 
         this.target = target;
-        inputLayer.feedForward(inputList);
+        inputLayer.feedForward(inputList, backprop);
 
         List<Double> o = layers.get(0).getOutput();
         double[] output = new double[o.size()];
@@ -61,16 +67,17 @@ public class Network {
             output[i] = o.get(i);
         }
 
-        if (set != null) {
-            printResults(output, set);
-        }
+        //printResults(target, "T" + set);
+        printResults(output, "O" + set);
+
+        return output;
     }
 
-    private static void printResults(double[] output, String set) {
+    public void printResults(double[] output, String set) {
         String f = "%4.10f  ";
         System.out.print(set + " --> ");
         for (double out : output) {
-            System.out.format(f, out);
+            System.out.format(f, out*100.0);
         }
         System.out.println();
     }
@@ -96,6 +103,4 @@ public class Network {
             System.out.println();
         }
     }
-
-
 }
