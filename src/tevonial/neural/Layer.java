@@ -1,8 +1,9 @@
 package tevonial.neural;
 
+import java.io.Serializable;
 import java.util.*;
 
-public class Layer {
+public class Layer implements Serializable {
     private Network network;
     private List<Neuron> neurons;
     private List<Double> output;

@@ -1,16 +1,16 @@
 package tevonial.neural;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Network {
+public class Network implements Serializable {
     private List<Layer> layers;
     private Layer inputLayer;
     private int hiddenSize, inputSize, outputSize, hiddenLayers;
     private double[] target;
-    public int set;
 
-    public double LEARNING_RATE = 0.5;
+    public double LEARNING_RATE;
 
     public Network(int inputSize, int outputSize) {
         this.inputSize = inputSize;
@@ -51,8 +51,7 @@ public class Network {
         return target[index];
     }
 
-    public double[] process(double[] input, double[] target, boolean backprop, Integer set) {
-        this.set = set;
+    public double[] process(double[] input, double[] target, boolean backprop, Integer digit) {
         List<Double> inputList = new ArrayList<>();
         for (int i=0; i<input.length; i++) {
             inputList.add(input[i]);
@@ -67,8 +66,9 @@ public class Network {
             output[i] = o.get(i);
         }
 
-        //printResults(target, "T" + set);
-        printResults(output, "O" + set);
+        if (digit != null) {
+            printResults(output, "O" + digit);
+        }
 
         return output;
     }
@@ -80,27 +80,5 @@ public class Network {
             System.out.format(f, out*100.0);
         }
         System.out.println();
-    }
-
-    public void printWeights() {
-        String f = "%8.4f";
-
-        System.out.print("\n\nLayer " + layers.size() + ": ");
-        for (Neuron n : inputLayer.getNeurons()) {
-           for (Double d : n.getWeights()) {
-               System.out.format(f, d);
-           }
-        }
-        System.out.println();
-        for (int i=layers.size()-1; i>=0; i--) {
-            Layer l = layers.get(i);
-            System.out.print("Layer " + i + ": ");
-            for (Neuron n : l.getNeurons()) {
-                for (Double d : n.getWeights()) {
-                    System.out.format(f, d);
-                }
-            }
-            System.out.println();
-        }
     }
 }

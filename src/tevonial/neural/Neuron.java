@@ -1,9 +1,10 @@
 package tevonial.neural;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Neuron {
+public class Neuron implements Serializable {
     private Network network;
     private int index;
     private int numInputs;
