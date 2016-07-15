@@ -2,8 +2,8 @@ A simple set of Java classes that, together, can create a simple feedforward neu
 
 #### Construction:
 ```java
-new Network(input_width, output_width)
-    .setHiddenLayers(layers, width)
+new Network(INPUT_WIDTH, OUTPUT_WIDTH)
+    .setHiddenLayers(LAYERS, WIDTH)
     .build();
 ```
 
@@ -22,7 +22,7 @@ double[] input = new double[]{1.0, 2.0, 3.0};
 double[] target = new double[]{0.5, 0.5};
 
 
-output = net.process();
+output = net.process(input);
 ```
 or to enable backpropagation,
 ```java
