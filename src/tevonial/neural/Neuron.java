@@ -13,6 +13,8 @@ public class Neuron implements Serializable {
     private double o;
     private double d;
 
+    public Neuron() {}
+
     public Neuron(Network network, int index, int numInputs) {
         this.network = network;
         this.index = index;

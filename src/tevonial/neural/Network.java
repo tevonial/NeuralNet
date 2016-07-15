@@ -10,7 +10,9 @@ public class Network implements Serializable {
     private int hiddenSize, inputSize, outputSize, hiddenLayers;
     private double[] target;
 
-    public double LEARNING_RATE;
+    public double LEARNING_RATE = 0.05;
+
+    public Network() {}
 
     public Network(int inputSize, int outputSize) {
         this.inputSize = inputSize;
@@ -51,6 +53,10 @@ public class Network implements Serializable {
         return target[index];
     }
 
+    public double[] process(double[] input) {
+        return process(input, null, false, null);
+    }
+
     public double[] process(double[] input, double[] target, boolean backprop, Integer digit) {
         List<Double> inputList = new ArrayList<>();
         for (int i=0; i<input.length; i++) {
@@ -74,7 +80,7 @@ public class Network implements Serializable {
     }
 
     public void printResults(double[] output, String set) {
-        String f = "%4.10f  ";
+        String f = "%3.2f  ";
         System.out.print(set + " --> ");
         for (double out : output) {
             System.out.format(f, out*100.0);

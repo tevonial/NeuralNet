@@ -9,6 +9,8 @@ public class Layer implements Serializable {
     private List<Double> output;
     private int layerIndex;
 
+    public Layer() {}
+
     public Layer(Network network, int layerIndex, int size, int numInputs) {
         this.network = network;
         this.layerIndex = layerIndex;
