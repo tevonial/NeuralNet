@@ -1,10 +1,9 @@
 package tevonial.neural;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Neuron implements Serializable {
+public class Neuron {
     private Network network;
     private int index;
     private int numInputs;
@@ -21,7 +20,7 @@ public class Neuron implements Serializable {
         this.numInputs = numInputs;
         weights = new ArrayList<>();
         for (int i=0; i<=numInputs; i++) {  //<= for bias
-            weights.add(Math.random() - Math.random());
+            weights.add((Math.random() - Math.random()) / 5.0);
         }
     }
 
@@ -41,19 +40,20 @@ public class Neuron implements Serializable {
 
         activation += weights.get(weights.size()-1);        //bias weight * 1
 
-        o = (1/( 1 + Math.exp(-1*activation)));
+        o = Network.activate(activation);
+
         return o;
     }
 
     public void correct(int layerIndex, List<Double> d, List<Double> w) {
         if (layerIndex == 0) {  //OUTPUT LAYER
-            this.d = (o - network.getTarget(index)) * (o) * (1 - o);
+            this.d = (o - network.getTarget(index)) * Network.activatePrime(o);//(o) * (1 - o);
         } else {                //HIDDEN LAYER
             this.d = 0;
-            for (int i=0; i< d.size(); i++) {
+            for (int i=0; i < d.size(); i++) {
                 this.d += (d.get(i) * w.get(i));
             }
-            this.d *= (o) * (1 - o);
+            this.d *= Network.activatePrime(o);//(o) * (1 - o);
         }
 
         //FINAL DELTA
@@ -73,7 +73,7 @@ public class Neuron implements Serializable {
         return weights;
     }
 
-    public double getD() {
+    public double getDelta() {
         return d;
     }
 }
