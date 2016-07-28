@@ -4,14 +4,14 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Network implements Serializable {
+public class Network {
 
     static final long serialVersionUID = 3385745983377898970L;
 
-    private List<Layer> layers;
+    List<Layer> layers;
     private double[] target;
 
-    public double LEARNING_RATE;
+    double LEARNING_RATE;
     public int WIDTH = 28, HEIGHT = 28;
 
     public Network() {}
@@ -20,27 +20,31 @@ public class Network implements Serializable {
         LEARNING_RATE = l;
     }
 
-    public Network buildFullyConnectedNetwork(int inputSize, int outputSize, int hiddenLayers, int hiddenSize) {
-        layers = new ArrayList<>();
+    public static Network buildFullyConnectedNetwork(int inputSize, int outputSize, int hiddenLayers, int hiddenSize) {
+        Network net = new Network();
 
-        layers.add(new FullLayer(this, 0, outputSize, hiddenSize));
+        net.layers = new ArrayList<>();
+
+        net.layers.add(new FullLayer(net, 0, outputSize, hiddenSize));
         for (int i = 0; i < hiddenLayers; i++) {
-            layers.add(new FullLayer(this, i + 1, hiddenSize, (i + 1 == hiddenLayers) ? inputSize : hiddenSize));
+            net.layers.add(new FullLayer(net, i + 1, hiddenSize, (i + 1 == hiddenLayers) ? inputSize : hiddenSize));
         }
-        layers.add(new FullLayer(this, layers.size(), inputSize, 1));
+        net.layers.add(new FullLayer(net, net.layers.size(), inputSize, 1));
 
-        return this;
+        return net;
     }
 
-    public Network buildConvolutionalNetwork(int numFeatures, int featureDim, int outputSize) {
-        layers = new ArrayList<>();
+    public static Network buildConvolutionalNetwork(int numFeatures, int featureDim, int outputSize) {
+        Network net = new Network();
 
-        int convOutputSize = ((int) Math.pow(((WIDTH - featureDim + 1) / 2), 2)) * numFeatures;
+        net.layers = new ArrayList<>();
 
-        layers.add(new FullLayer(this, 0, outputSize, convOutputSize));
-        layers.add(new ConvolutionalLayer(this, layers.size(), numFeatures, featureDim));
+        int convOutputSize = ((int) Math.pow(((net.WIDTH - featureDim + 1) / 2), 2)) * numFeatures;
 
-        return this;
+        net.layers.add(new FullLayer(net, net.layers.size(), outputSize, convOutputSize));
+        net.layers.add(new ConvolutionalLayer(net, net.layers.size(), numFeatures, featureDim));
+
+        return net;
     }
 
     public Layer getLayer(int index) {

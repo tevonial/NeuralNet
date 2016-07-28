@@ -64,7 +64,7 @@ public class FeatureMap {
                 for (int i=0; i<convolutedDim; i++) {
                     for (int j=0; j<convolutedDim; j++) {
 
-                        List<Double> _w = w.get(((i/2)*(convolutedDim/2)) + j/2);
+                        List<Double> _w = w.get(((i/2)*(convolutedDim/2)) + j/2);       //depool
 
                         for (int q=0; q<d.size(); q++) {
                             try {

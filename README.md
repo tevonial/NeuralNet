@@ -2,9 +2,9 @@ A simple set of Java classes that, together, can create a simple feedforward neu
 
 #### Construction:
 ```java
-new Network(INPUT_WIDTH, OUTPUT_WIDTH)
-    .setHiddenLayers(LAYERS, WIDTH)
-    .build();
+Network.buildFullyConnectedNetwork(INPUT, OUTPUT, HIDDEN_LAYERS, HIDDEN_WIDTH);
+
+Network.buildConvolutionalNetwork(FEATURES, FEATURE_WIDTH, OUTPUT);
 ```
 
 ```java
@@ -14,13 +14,8 @@ setLearningRate(LEARNING_RATE);
 
 #### Example Usage:
 ```java
-Network net = new Network(3, 2)
-    .setHiddenLayers(1, 2)
-    .build();
+Network net = Network.buildConvolutionalNetwork(22, 5, 10);
 net.setLearningRate(0.01);
-double[] input = new double[]{1.0, 2.0, 3.0};
-double[] target = new double[]{0.5, 0.5};
-
 
 output = net.process(input);
 ```
