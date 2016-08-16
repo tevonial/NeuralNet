@@ -1,4 +1,4 @@
-A simple set of Java classes that, together, can create a simple feedforward neural network with the ability to learn using gradient descent.
+A set of Java classes that, together, can create a simple convolutional neural network.
 
 #### Construction:
 ```java
