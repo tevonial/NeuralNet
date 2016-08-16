@@ -45,16 +45,8 @@ public class Neuron {
         return o;
     }
 
-    public void correct(int layerIndex, List<Double> d, List<Double> w) {
-        if (layerIndex == 0) {  //OUTPUT LAYER
-            this.d = (o - network.getTarget(index)) * Network.activatePrime(o);//(o) * (1 - o);
-        } else {                //HIDDEN LAYER
-            this.d = 0;
-            for (int i=0; i < d.size(); i++) {
-                this.d += (d.get(i) * w.get(i));
-            }
-            this.d *= Network.activatePrime(o);//(o) * (1 - o);
-        }
+    public void correct(double E) {
+        this.d = E * Network.activatePrime(o);
 
         //FINAL DELTA
         double delta = this.d * (-1) * network.LEARNING_RATE;
@@ -68,6 +60,8 @@ public class Neuron {
             weights.set(i, weights.get(i) + deltaWeight);
         }
     }
+
+
 
     public List<Double> getWeights() {
         return weights;

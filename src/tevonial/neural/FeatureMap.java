@@ -12,6 +12,8 @@ public class FeatureMap {
 
     private int convolutedDim;
 
+    List<Double> _E = new ArrayList<>();
+
     public FeatureMap() {}
 
     public FeatureMap(ConvolutionalLayer layer, int dim) {
@@ -54,37 +56,32 @@ public class FeatureMap {
         return out;
     }
 
-    public void backPropagate(List<Double> d, List<List<Double>> w) {
+    public void correct(List<Double> E) {
 
         for (int a=0; a<dim; a++) {
             for (int b = 0; b<= dim; b++) {
 
-                double delta = 0.0;
+                double dweight = 0.0;
 
                 for (int i=0; i<convolutedDim; i++) {
                     for (int j=0; j<convolutedDim; j++) {
 
-                        List<Double> _w = w.get(((i/2)*(convolutedDim/2)) + j/2);       //depool
+                        double e = E.get(((i/2)*(convolutedDim/2)) + j/2);
 
-                        for (int q=0; q<d.size(); q++) {
-                            try {
-                                delta += d.get(q) * _w.get(q) * layer.input.get(((i + a) * 28) + (j + b));
-                            } catch (Exception e) {
-                                delta += d.get(q) * _w.get(q);
-                            }
+                        try {
+                            dweight += e * Network.activatePrime(out.get((i*convolutedDim) + j)) * layer.input.get(((i + a) * 28) + (j + b));
+                        } catch (Exception ex) {
+                            dweight += e * Network.activatePrime(out.get((i*convolutedDim) + j));
                         }
-
-                        double x = out.get((i*convolutedDim) + j);
-
-                        delta *= Network.activatePrime(x) * (-1) * layer.network.LEARNING_RATE;
 
                     }
                 }
 
-                weights.set(a*dim + b, weights.get(a*dim + b) + delta);
+                dweight *= (-1) * layer.network.LEARNING_RATE;
+
+                weights.set(a*dim + b, weights.get(a*dim + b) + dweight);
 
             }
         }
     }
-
 }

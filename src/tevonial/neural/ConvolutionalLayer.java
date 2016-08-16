@@ -38,16 +38,16 @@ public class ConvolutionalLayer implements Layer {
     }
 
     @Override
-    public void backPropagate(List<Double> d, List<List<Double>> w) {
+    public void backPropagate(List<Double> E) {
+
         for (int f=0; f<features.size(); f++) {
 
             int convolutedSize = (convolutedDim * convolutedDim) / 4;
 
             int index = f * convolutedSize;
 
-            List<List<Double>> _w = w.subList(index, index + convolutedSize);
+            features.get(f).correct(E.subList(index, index + convolutedSize));
 
-            features.get(f).backPropagate(d, _w);
         }
     }
 
@@ -58,16 +58,11 @@ public class ConvolutionalLayer implements Layer {
         for (int y = 0; y < convolutedDim - 2; y+= 2) {
             for (int x = 0; x < convolutedDim - 2; x+= 2) {
 
-                double[] a = new double[]{
-                        input.get(y*convolutedDim + x),
-                        input.get(y*convolutedDim + x + 1),
-                        input.get((y+1)*convolutedDim + x),
-                        input.get((y+1)*convolutedDim + x + 1)
-                };
-
-                o = (a[0] > a[1]) ? a[0] : a[1];
-                if (a[2] > o) o = a[2];
-                if (a[3] > 0) o = a[3];
+                o = Math.max(
+                        input.get(y*convolutedDim + x), Math.max(
+                        input.get(y*convolutedDim + x + 1), Math.max(
+                        input.get((y+1)*convolutedDim + x), input.get((y+1)*convolutedDim + x + 1)
+                )));
 
                 out.add(o);
             }

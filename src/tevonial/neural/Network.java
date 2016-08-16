@@ -1,12 +1,9 @@
 package tevonial.neural;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Network {
-
-    static final long serialVersionUID = 3385745983377898970L;
 
     List<Layer> layers;
     private double[] target;

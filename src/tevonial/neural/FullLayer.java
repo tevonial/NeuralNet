@@ -29,32 +29,41 @@ public class FullLayer implements Layer {
         try {
             network.getLayer(layerIndex - 1).feedForward(output, backprop);
         } catch (NullPointerException e) {
-            if (backprop) this.backPropagate(null, null);
+            if (backprop) this.backPropagate(null);
         }
 
     }
 
     @Override
-    public void backPropagate(List<Double> d, List<List<Double>> w) {
-        List<List<Double>> _w = new ArrayList<>();
-        List<Double> _d = new ArrayList<>();
+    public void backPropagate(List<Double> E) {
+        List<List<Double>> w = new ArrayList<>();
+        List<Double> d = new ArrayList<>();
+
         for (int j=0; j<neurons.size(); j++) {
             Neuron n = neurons.get(j);
 
-            try {
-                n.correct(layerIndex, d, w.get(j));
-            } catch (NullPointerException e){
-                n.correct(layerIndex, null, null);
+            if (layerIndex == 0) {
+                n.correct(output.get(j) - network.getTarget(j));
+            } else {
+                n.correct(E.get(j));
             }
 
-            _d.add(n.getDelta());
-            _w.add(n.getWeights());
+            d.add(n.getDelta());
+            w.add(n.getWeights());
         }
 
-        _w = rotate(_w);
+        //Calculate error for previous layer, no need to rotate
+        E = new ArrayList<>();
+        for (int i=0; i<w.get(0).size(); i++) {
+            double e = 0.0;
+            for (int j=0; j<d.size(); j++) {
+                e += d.get(j) * w.get(j).get(i);
+            }
+            E.add(e);
+        }
 
         try {
-            network.getLayer(layerIndex + 1).backPropagate(_d, _w);
+            network.getLayer(layerIndex + 1).backPropagate(E);
         } catch (NullPointerException e) {}
     }
 
@@ -62,31 +71,5 @@ public class FullLayer implements Layer {
         return output;
     }
 
-    public List<Neuron> getNeurons() {
-        return neurons;
-    }
-
-    private List<List<Double>> rotate(List<List<Double>> in) {
-        List<List<Double>> out = new ArrayList<>(); boolean first = true;
-        List<Double> row = new ArrayList<>();
-        for (int i=0; i<in.size(); i++) {
-            row.add(null);
-        }
-
-        for (int x=0; x<in.size(); x++) {
-            List<Double> l = in.get(x);
-            if (first) {
-                for (int i=0; i<l.size(); i++) {
-                    out.add(row);
-                }
-            }
-            first = false;
-
-            for (int y=0; y<l.size(); y++) {
-                out.get(y).set(x, l.get(y));
-            }
-        }
-        return out;
-    }
 }
 
