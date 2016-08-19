@@ -28,23 +28,15 @@ public class FeatureMap {
     }
 
     public List<Double> filter(List<Double> input) {
-        List<Double> in;
         out = new ArrayList<>();
 
         for (int y = 0; y < convolutedDim; y++) {
             for (int x = 0; x < convolutedDim; x++) {
 
-                in = new ArrayList<>();
-                for (int y2 = 0; y2 < dim; y2++) {
-                    for (int x2 = 0; x2 < dim; x2++) {
-                        in.add(input.get(((y + y2) * 28) + (x + x2)));
-                    }
-                }
-
                 double activation = 0.0;
 
-                for (int i = 0; i < in.size(); i++) {
-                    activation += weights.get(i) * in.get(i);
+                for (int i = 0; i < dim*dim; i++) {
+                    activation += weights.get(i) * input.get( (((i/dim) + y) * 28) + (i%dim + x) );
                 }
 
                 activation += weights.get(weights.size()-1);        //bias weight * 1
