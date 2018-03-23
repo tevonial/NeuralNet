@@ -20,7 +20,7 @@ public class Neuron {
         this.numInputs = numInputs;
         weights = new ArrayList<>();
         for (int i=0; i<=numInputs; i++) {  //<= for bias
-            weights.add((Math.random() - Math.random()) / 5.0);
+            weights.add((Math.random() - Math.random()) / 1.0);
         }
     }
 
@@ -35,7 +35,11 @@ public class Neuron {
         }
 
         for (int i = 0; i < input.size(); i++) {
-            activation += weights.get(i) * input.get(i);
+            try {
+                activation += weights.get(i) * input.get(i);
+            } catch (IndexOutOfBoundsException e) {
+                System.err.println("weights.size()=" + weights.size() + "\tinput.size()=" + input.size());
+            }
         }
 
         activation += weights.get(weights.size()-1);        //bias weight * 1
