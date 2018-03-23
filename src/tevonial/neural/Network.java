@@ -5,16 +5,26 @@ import java.util.List;
 
 public class Network {
 
-    List<Layer> layers;
+    private List<Layer> layers;
     private double[] target;
 
-    double LEARNING_RATE;
-    public int WIDTH = 28, HEIGHT = 28;
+    public double LEARNING_RATE;
+    private int DIM;
 
-    public Network() {}
 
-    public void setLearningRate(double l) {
-        LEARNING_RATE = l;
+    public Network() {
+        LEARNING_RATE = 0.01;
+        DIM = 28;
+    }
+
+    public Network setLearningRate(double learningRate) {
+        this.LEARNING_RATE = learningRate;
+        return this;
+    }
+
+    public Network setDim(int dim) {
+        this.DIM = dim;
+        return this;
     }
 
     public static Network buildFullyConnectedNetwork(int inputSize, int outputSize, int hiddenLayers, int hiddenSize) {
@@ -36,7 +46,7 @@ public class Network {
 
         net.layers = new ArrayList<>();
 
-        int convOutputSize = ((int) Math.pow(((net.WIDTH - featureDim + 1) / 2), 2)) * numFeatures;
+        int convOutputSize = ((int) Math.pow(((net.DIM - featureDim + 1) / 2), 2)) * numFeatures;
 
         net.layers.add(new FullLayer(net, net.layers.size(), outputSize, convOutputSize));
         net.layers.add(new ConvolutionalLayer(net, net.layers.size(), numFeatures, featureDim));
@@ -62,9 +72,8 @@ public class Network {
 
     public double[] process(double[] input, double[] target, boolean backprop, Integer digit) {
         List<Double> inputList = new ArrayList<>();
-        for (int i=0; i<input.length; i++) {
+        for (int i=0; i<input.length; i++)
             inputList.add(input[i]);
-        }
 
         this.target = target;
         layers.get(layers.size()-1).feedForward(inputList, backprop);
@@ -82,7 +91,7 @@ public class Network {
         return output;
     }
 
-    public void printResults(double[] output, String set) {
+    private void printResults(double[] output, String set) {
         String f = "%3.2f  ";
         System.out.print(set + " --> ");
         for (double out : output) {
