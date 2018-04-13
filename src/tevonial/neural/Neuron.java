@@ -14,17 +14,17 @@ public class Neuron {
 
     public Neuron() {}
 
-    public Neuron(Network network, int index, int numInputs) {
+    Neuron(Network network, int index, int numInputs) {
         this.network = network;
         this.index = index;
         this.numInputs = numInputs;
         weights = new ArrayList<>();
-        for (int i=0; i<=numInputs; i++) {  //<= for bias
-            weights.add((Math.random() - Math.random()) / 1.0);
-        }
+
+        for (int i=0; i<=numInputs; i++)  //<= for bias
+            weights.add(Math.random() - Math.random());
     }
 
-    public double getOutput(List<Double> inputs) {
+    double getOutput(List<Double> inputs) {
         double activation = 0;
 
         if (numInputs == 1) {                               //For input layer
@@ -43,13 +43,12 @@ public class Neuron {
         }
 
         activation += weights.get(weights.size()-1);        //bias weight * 1
-
         o = Network.activate(activation);
 
         return o;
     }
 
-    public void correct(double E) {
+    void correct(double E) {
         this.d = E * Network.activatePrime(o);
 
         //FINAL DELTA
@@ -67,11 +66,11 @@ public class Neuron {
 
 
 
-    public List<Double> getWeights() {
+    List<Double> getWeights() {
         return weights;
     }
 
-    public double getDelta() {
+    double getDelta() {
         return d;
     }
 }

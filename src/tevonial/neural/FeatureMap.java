@@ -16,31 +16,27 @@ public class FeatureMap {
 
     public FeatureMap() {}
 
-    public FeatureMap(ConvolutionalLayer layer, int dim) {
+    FeatureMap(ConvolutionalLayer layer, int dim) {
         this.dim = dim;
         this.layer = layer;
         convolutedDim = layer.convolutedDim;
 
         weights = new ArrayList<>();
-        for (int i=0; i <= dim*dim; i++) {  //<= for bias
+        for (int i=0; i <= dim*dim; i++)  //<= for bias
             weights.add( (Math.random() - Math.random()) / 5.0);
-        }
     }
 
-    public List<Double> filter(List<Double> input) {
+    List<Double> filter(List<Double> input) {
         out = new ArrayList<>();
 
         for (int y = 0; y < convolutedDim; y++) {
             for (int x = 0; x < convolutedDim; x++) {
-
                 double activation = 0.0;
 
-                for (int i = 0; i < dim*dim; i++) {
+                for (int i = 0; i < dim*dim; i++)
                     activation += weights.get(i) * input.get( (((i/dim) + y) * 28) + (i%dim + x) );
-                }
 
                 activation += weights.get(weights.size()-1);        //bias weight * 1
-
                 out.add(Network.activate(activation));
             }
         }
@@ -48,11 +44,9 @@ public class FeatureMap {
         return out;
     }
 
-    public void correct(List<Double> E) {
-
+    void correct(List<Double> E) {
         for (int a=0; a<dim; a++) {
             for (int b = 0; b<= dim; b++) {
-
                 double dweight = 0.0;
 
                 for (int i=0; i<convolutedDim; i++) {
@@ -69,10 +63,8 @@ public class FeatureMap {
                     }
                 }
 
-                dweight *= (-1) * layer.network.LEARNING_RATE;
-
+                dweight *= -1 * layer.network.LEARNING_RATE;
                 weights.set(a*dim + b, weights.get(a*dim + b) + dweight);
-
             }
         }
     }

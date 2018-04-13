@@ -8,8 +8,8 @@ public class Network {
     private List<Layer> layers;
     private double[] target;
 
-    public double LEARNING_RATE;
-    private int DIM;
+    double LEARNING_RATE;
+    public int DIM;
 
 
     public Network() {
