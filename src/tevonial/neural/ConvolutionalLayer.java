@@ -5,22 +5,23 @@ import java.util.List;
 
 public class ConvolutionalLayer implements Layer {
     Network network;
-    private int layerIndex;
-    int convolutedDim;
-
-    List<Double> input;
+    int index, factorX, factorY;
+    private int convolutedDimX, convolutedDimY, featureDimX, featureDimY;
+    List<Double> input, E;
     private List<FeatureMap> features;
 
-    public ConvolutionalLayer() {}
-
-    ConvolutionalLayer(Network network, int layerIndex, int numFeatures, int featureDim) {
+    ConvolutionalLayer(Network network, int index, int numFeatures, int featureDimX, int featureDimY) {
         this.network = network;
-        this.layerIndex = layerIndex;
-        this.convolutedDim = (network.DIM - featureDim + 1);
+        this.index = index;
+        this.convolutedDimX = network.dimX - featureDimX + 1;
+        this.convolutedDimY = network.dimY - featureDimY + 1;
+        this.featureDimX = featureDimX;
+        this.featureDimY = featureDimY;
+        this.factorX = this.factorY = 2;
 
         features = new ArrayList<>();
-        for (int i=0; i<numFeatures; i++)
-            features.add(new FeatureMap(this, featureDim));
+        for (int i = 0; i < numFeatures; i++)
+            features.add(new FeatureMap(this, featureDimX, featureDimY));
     }
 
     @Override
@@ -31,33 +32,51 @@ public class ConvolutionalLayer implements Layer {
         for (FeatureMap map : features)
             output.addAll(pool(map.filter(input)));
 
-        network.getLayer(layerIndex - 1).feedForward(output, backprop);
+        network.layers.get(index - 1).feedForward(output, backprop);
     }
 
     @Override
     public void backPropagate(List<Double> E) {
-        for (int f=0; f<features.size(); f++) {
-            int convolutedSize = (convolutedDim * convolutedDim) / 4;
+        for (int f = 0; f < features.size(); f++) {
+            int convolutedSize = (convolutedDimX * convolutedDimY) / (factorX * factorY);
             int index = f * convolutedSize;
 
-            features.get(f).correct(E.subList(index, index + convolutedSize));
+            features.get(f).correct(E.subList(index, index + featureDimY * featureDimX));
         }
+
+//        TODO: caltulate deltas
+//
+//        for (int i = 0; i < w.get(0).size(); i++) {
+//            double e = 0.0;
+//            for (int j = 0; j < d.size(); j++)
+//                e += d.get(j) * w.get(j).get(i);
+//            E.add(e);
+//        }
+//
+//        if (index != network.layers.size() - 1)
+//              network.getLayer(layerIndex + 1).backPropagate(E);
     }
 
     private List<Double> pool(List<Double> input) {
         List<Double> out = new ArrayList<>();
 
-        for (int y = 0; y < convolutedDim - 2; y+= 2) {
-            for (int x = 0; x < convolutedDim - 2; x+= 2) {
-                double o = Math.max(
-                        input.get(y*convolutedDim + x), Math.max(
-                        input.get(y*convolutedDim + x + 1), Math.max(
-                        input.get((y+1)*convolutedDim + x), input.get((y+1)*convolutedDim + x + 1)
-                )));
+        if (input.size() == 1)
+            return input;
 
-                out.add(o);
+        int poolDimX = (convolutedDimX - factorX) / factorX, poolDimY = (convolutedDimX - factorX) / factorX;
+
+        for (int y = 0; y < poolDimY; y += factorY) {
+            for (int x = 0; x < poolDimX; x += factorX) {
+                double max = 0.0;
+
+                for (int y2 = 0; y2 < factorY; y2++)
+                    for (int x2 = 0; x2 < factorX; y2++) {
+                        max = Math.max(max, input.get((y + y2) * convolutedDimX + x + x2));
+                        out.add(max);
+                    }
             }
         }
+
         return out;
     }
 }
