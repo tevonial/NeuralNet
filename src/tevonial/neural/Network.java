@@ -4,104 +4,105 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Network {
-
-    private List<Layer> layers;
-    private double[] target;
-
-    double LEARNING_RATE;
-    public int DIM;
-
+    List<Layer> layers;
+    double[] target;
+    double learningRate;
+    public int dimX, dimY;
 
     public Network() {
-        LEARNING_RATE = 0.01;
-        DIM = 28;
+        learningRate = 0.1;
+        dimX = dimY = 28;
+        layers = new ArrayList<>();
     }
 
     public Network setLearningRate(double learningRate) {
-        this.LEARNING_RATE = learningRate;
+        this.learningRate = learningRate;
         return this;
     }
 
-    public Network setDim(int dim) {
-        this.DIM = dim;
+    public Network setDim(int dimX, int dimY) {
+        this.dimX = dimX;
+        this.dimY = dimY;
         return this;
     }
 
     public static Network buildFullyConnectedNetwork(int inputSize, int outputSize, int hiddenLayers, int hiddenSize) {
         Network net = new Network();
 
-        net.layers = new ArrayList<>();
-
         net.layers.add(new FullLayer(net, 0, outputSize, hiddenSize));
-        for (int i = 0; i < hiddenLayers; i++) {
+        for (int i = 0; i < hiddenLayers; i++)
             net.layers.add(new FullLayer(net, i + 1, hiddenSize, (i + 1 == hiddenLayers) ? inputSize : hiddenSize));
-        }
+
         net.layers.add(new FullLayer(net, net.layers.size(), inputSize, 1));
 
         return net;
     }
 
-    public static Network buildConvolutionalNetwork(int numFeatures, int featureDim, int outputSize) {
+    public static Network buildConvolutionalNetwork(int numFeatures, int featureDimX, int featureDimY, int outputSize) {
         Network net = new Network();
 
-        net.layers = new ArrayList<>();
-
-        int convOutputSize = ((int) Math.pow(((net.DIM - featureDim + 1) / 2), 2)) * numFeatures;
-
+        int convOutputSize = ((net.dimX - featureDimX + 1) / 2) * ((net.dimY - featureDimY + 1) / 2) * numFeatures;
         net.layers.add(new FullLayer(net, net.layers.size(), outputSize, convOutputSize));
-        net.layers.add(new ConvolutionalLayer(net, net.layers.size(), numFeatures, featureDim));
+        net.layers.add(new ConvolutionalLayer(net, net.layers.size(), numFeatures, featureDimX, featureDimY));
+        net.layers.add(new FullLayer(net, net.layers.size(), (int) Math.pow(net.dimX, 2), 1));
 
         return net;
-    }
-
-    public Layer getLayer(int index) {
-        if (index == -1 || index >= layers.size()) {
-            return null;
-        } else {
-            return layers.get(index);
-        }
-    }
-
-    public double getTarget(int index) {
-        return target[index];
     }
 
     public double[] process(double[] input) {
         return process(input, null, false, null);
     }
 
-    public double[] process(double[] input, double[] target, boolean backprop, Integer digit) {
-        List<Double> inputList = new ArrayList<>();
-        for (int i=0; i<input.length; i++)
-            inputList.add(input[i]);
-
+    public double[] process(double[] input, double[] target, boolean backprop, Integer set) {
+        List<Double> _input = new ArrayList<>();
         this.target = target;
-        layers.get(layers.size()-1).feedForward(inputList, backprop);
+        double error = 0;
 
-        List<Double> o = ((FullLayer) layers.get(0)).getOutput();
+        for (double i : input)
+            _input.add(i);
+
+        long start = System.nanoTime();
+        layers.get(layers.size() - 1).feedForward(_input, backprop);
+        long end = System.nanoTime();
+
+        List<Double> o = ((FullLayer) layers.get(0)).output;
         double[] output = new double[o.size()];
-        for (int i=0; i<o.size(); i++) {
+
+        for (int i = 0; i < o.size(); i++) {
             output[i] = o.get(i);
+            error += target[i] - output[i];
         }
 
-        if (digit != null) {
-            printResults(output, "O" + digit);
-        }
+        printResults(output, error, (end - start) / 1000000, set);
 
         return output;
     }
 
-    private void printResults(double[] output, String set) {
-        String f = "%3.2f  ";
-        System.out.print(set + " --> ");
-        for (double out : output) {
-            System.out.format(f, out*100.0);
+    private void printResults(double[] output, double error, double time, Integer set) {
+        if (set != null) {
+            if (set < 10) System.out.print(" ");
+            System.out.print(set + " -->\t");
+
+            String f = "%3.4f";
+            for (double o : output) {
+                o = Math.round(o * 100000) / 10000.0;
+                if (o < 100) System.out.print(' ');
+                if (o < 10) System.out.print(' ');
+                if (o >= 0) System.out.print(' ');
+                System.out.format(f + ' ', o);
+            }
+
+            if (error < 0)
+                System.out.format("\terror: " + f, error);
+            else
+                System.out.format("\terror:  " + f, error);
+
+            System.out.println(" \t" + time + " ms");
         }
-        System.out.println();
     }
 
-    public static double activate(double x) {
-        return (1/( 1 + Math.exp(-1*x)));                       //SIGMOID
+    static double activate(double x) {
+        return (1 / ( 1 + Math.exp(-1 * x)));                       //SIGMOID
         //return Math.log(1 + Math.exp(x));                     //ReLU
 
         /*if (x <= 0) {                                         //Leaky ReLU
@@ -111,7 +112,7 @@ public class Network {
         }*/
     }
 
-    public static double activatePrime(double x) {
+    static double activatePrime(double x) {
         return x * (1.0 - x);                                  //SIGMOID
         //return  1.0 / (1.0 + Math.exp(-1 * x));              //ReLU
 
