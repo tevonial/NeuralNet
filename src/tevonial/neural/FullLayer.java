@@ -5,31 +5,28 @@ import java.util.*;
 public class FullLayer implements Layer {
     private Network network;
     private List<Neuron> neurons;
-    private List<Double> output;
-    private int layerIndex;
+    List<Double> output;
+    private int index;
 
-    public FullLayer() {}
-
-    FullLayer(Network network, int layerIndex, int size, int numInputs) {
+    FullLayer(Network network, int index, int size, int inputs) {
         this.network = network;
-        this.layerIndex = layerIndex;
+        this.index = index;
         neurons = new ArrayList<>();
-        for (int i=0; i<size; i++)
-            neurons.add(new Neuron(network, i, numInputs));
+
+        for (int i = 0; i < size; i++)
+            neurons.add(new Neuron(network, i, inputs));
     }
 
     @Override
     public void feedForward(List<Double> input, boolean backprop) {
         output = new ArrayList<>();
         for (Neuron neuron : neurons)
-            output.add(neuron.getOutput(input));
+            output.add(neuron.filter(input));
 
-        try {
-            network.getLayer(layerIndex - 1).feedForward(output, backprop);
-        } catch (NullPointerException e) {
+        if (index > 0 || network.layers.size() == 1)
+            network.layers.get(index - 1).feedForward(output, backprop);
+        else
             if (backprop) this.backPropagate(null);
-        }
-
     }
 
     @Override
@@ -37,35 +34,29 @@ public class FullLayer implements Layer {
         List<List<Double>> w = new ArrayList<>();
         List<Double> d = new ArrayList<>();
 
-        for (int j=0; j<neurons.size(); j++) {
-            Neuron n = neurons.get(j);
+        for (int i = 0; i < neurons.size(); i++) {
+            Neuron n = neurons.get(i);
 
-            if (layerIndex == 0)
-                n.correct(output.get(j) - network.getTarget(j));
+            if (index == 0)
+                n.correct(output.get(i) - network.target[i]);
             else
-                n.correct(E.get(j));
+                n.correct(E.get(i));
 
-            d.add(n.getDelta());
-            w.add(n.getWeights());
+            d.add(n.delta);
+            w.add(n.weights);
         }
 
         //Calculate error for previous layer, no need to rotate
         E = new ArrayList<>();
-        for (int i=0; i<w.get(0).size(); i++) {
+        for (int i = 0; i < w.get(0).size(); i++) {
             double e = 0.0;
-            for (int j=0; j<d.size(); j++)
+            for (int j = 0; j < d.size(); j++)
                 e += d.get(j) * w.get(j).get(i);
             E.add(e);
         }
 
-        try {
-            network.getLayer(layerIndex + 1).backPropagate(E);
-        } catch (NullPointerException e) {}
+        if (index != network.layers.size() - 1)
+            network.layers.get(index + 1).backPropagate(E);
     }
-
-    List<Double> getOutput() {
-        return output;
-    }
-
 }
 

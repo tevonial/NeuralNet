@@ -3,74 +3,45 @@ package tevonial.neural;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Neuron {
+class Neuron {
     private Network network;
-    private int index;
-    private int numInputs;
-    private List<Double> weights;
-    private List<Double> input;
-    private double o;
-    private double d;
+    private int inputs, index;
+    List<Double> input, weights;
+    private double output;
+    double delta;
 
-    public Neuron() {}
-
-    Neuron(Network network, int index, int numInputs) {
+    Neuron(Network network, int index, int inputs) {
         this.network = network;
+        this.inputs = inputs;
         this.index = index;
-        this.numInputs = numInputs;
+        input = new ArrayList<>();
         weights = new ArrayList<>();
 
-        for (int i=0; i<=numInputs; i++)  //<= for bias
+        for (int i = 0; i <= inputs; i++)  //<= for bias
             weights.add(Math.random() - Math.random());
     }
 
-    double getOutput(List<Double> inputs) {
-        double activation = 0;
+    double filter(List<Double> in) {
+        double activation = weights.get(weights.size() - 1);    // bias weight * 1;
 
-        if (numInputs == 1) {                               //For input layer
-            this.input = new ArrayList<>();
-            this.input.add(inputs.get(index));
-        } else {                                            //For all other layers
-            this.input = inputs;
-        }
+        if (inputs == 1)                                        // For input layer
+            input.add(in.get(index));
+        else                                                    // For all other layers
+            input = in;
 
-        for (int i = 0; i < input.size(); i++) {
-            try {
-                activation += weights.get(i) * input.get(i);
-            } catch (IndexOutOfBoundsException e) {
-                System.err.println("weights.size()=" + weights.size() + "\tinput.size()=" + input.size());
-            }
-        }
+        for (int i = 0; i < Math.min(input.size(), weights.size()); i++)
+            activation += weights.get(i) * input.get(i);
 
-        activation += weights.get(weights.size()-1);        //bias weight * 1
-        o = Network.activate(activation);
+        output = Network.activate(activation);
 
-        return o;
+        return output;
     }
 
     void correct(double E) {
-        this.d = E * Network.activatePrime(o);
+        this.delta = E * Network.activatePrime(output);
+        double d = this.delta * network.learningRate * -1;
 
-        //FINAL DELTA
-        double delta = this.d * (-1) * network.LEARNING_RATE;
-
-        for (int i=0; i<weights.size(); i++) {
-            double deltaWeight = delta;
-            try {
-                deltaWeight *= input.get(i);
-            } catch (IndexOutOfBoundsException e) {}
-
-            weights.set(i, weights.get(i) + deltaWeight);
-        }
-    }
-
-
-
-    List<Double> getWeights() {
-        return weights;
-    }
-
-    double getDelta() {
-        return d;
+        for (int i = 0; i < Math.min(input.size(), weights.size()); i++)
+            weights.set(i, weights.get(i) + d * input.get(i));
     }
 }
