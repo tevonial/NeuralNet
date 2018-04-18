@@ -70,7 +70,7 @@ public class Network {
 
         for (int i = 0; i < o.size(); i++) {
             output[i] = o.get(i);
-            error += target[i] - output[i];
+            error += Math.abs(target[i] - output[i]);
         }
 
         printResults(output, error, (end - start) / 1000000, set);
