@@ -26,7 +26,7 @@ public class Network {
         return this;
     }
 
-    public static Network buildFullyConnectedNetwork(int inputSize, int outputSize, int hiddenLayers, int hiddenSize) {
+    public static Network buildFullyConnectedNetwork(int inputSize, int hiddenLayers, int hiddenSize, int outputSize) {
         Network net = new Network();
 
         net.layers.add(new FullLayer(net, 0, outputSize, hiddenSize));
@@ -85,7 +85,7 @@ public class Network {
 
             String f = "%3.4f";
             for (double o : output) {
-                o = Math.round(o * 100000) / 10000.0;
+                o = Math.round(o * 10000) / 10000.0;
                 if (o < 100) System.out.print(' ');
                 if (o < 10) System.out.print(' ');
                 if (o >= 0) System.out.print(' ');

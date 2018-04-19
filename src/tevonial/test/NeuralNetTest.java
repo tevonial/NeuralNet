@@ -4,22 +4,22 @@ import tevonial.neural.Network;
 
 public class NeuralNetTest {
     private static double[][] target = {
-            {0.2738, 0.2234, 0.32},
-            {0.1738, 0.1234, 0.22},
-            {0.5950, 0.8807, 0.15},
-            {.2771,   .6402,    .61}
+            {0.2738, 0.2234, 0.3218, 0.8765},
+            {0.1738, 0.1234, 0.2209, 0.1922},
+            {0.5950, 0.8807, 0.1599, 0.6775},
+            {0.2771, 0.6402, 0.6156, 0.0609}
     };
 
     public static void main(String[] args) {
         Network nets[] = {
-            Network.buildFullyConnectedNetwork(20, 3, 3, 25),
-            Network.buildConvolutionalNetwork(5,    5   ,  5, 3)
+            Network.buildFullyConnectedNetwork(20, 3, 25, 4),
+            Network.buildConvolutionalNetwork(5,    5   ,  5, 4)
         };
 
         double input[][] = new double[nets.length][];
         input[0] = new double[20];
         input[1] = new double[nets[1].dimX * nets[1].dimY];
-        int iterations = 300;
+        int iterations = 200;
 
         for (int i = 0; i < 20; i++) {
             for (int j = 0; j < nets.length; j++) {
